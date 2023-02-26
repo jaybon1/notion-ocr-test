@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <style>
+      body {
+        background-color: #6dc3c6;
+      }
+
+      #login-box {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        margin: 100px auto;
+        max-width: 400px;
+      }
+
+      h1 {
+        font-size: 36px;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #f7931e;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 20px;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+      }
+
+      button {
+        background-color: #f7931e;
+        color: #fff;
+        font-size: 24px;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+      }
+
+      button:hover {
+        background-color: #e58f1c;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="login-box">
+      <h1>노나미 Login</h1>
+      <form>
+        <label for="email">email</label>
+        <input type="email" id="email" name="email" />
+        <button type="button" onclick="reqLogin()">Log In</button>
+      </form>
+    </div>
+  </body>
+  <script>
+    const reqLogin = () => {
+      const email = document.getElementById("email");
+
+      fetch("https://jaybon.org/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email.value,
+        }),
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          if (result.code === 0) {
+            location.replace("/");
+          } else {
+            alert(result.message);
+          }
+        });
+    };
+  </script>
+</html>

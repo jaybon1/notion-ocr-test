@@ -28,6 +28,8 @@
     </style>
   </head>
   <body>
+    <h1 id="loading">로딩 중</h1>
+    <h1 id="remainCount">0</h1>
     <div id="drop-zone">
       <img
         id="dropImage"
@@ -70,20 +72,57 @@
           var formData = new FormData();
           formData.append("image", files[0]);
 
-          fetch("https://jaybon.org/api/text-detection", {
+          fetch("https://jaybon.org/api/ocr/text-detection", {
             method: "POST",
+            credentials: "include",
             body: formData,
           })
             .then((response) => response.json())
             .then((respDTO) => {
-              message.textContent = respDTO.data;
-              message.style.display = "block";
+              if (respDTO.code === 0) {
+                message.textContent = respDTO.data.text;
+                document.getElementById("remainCount").textContent =
+                  respDTO.data.remainCount;
+                message.style.display = "block";
+              } else if (respDTO.code == 4) {
+                alert(respDTO.message);
+              } else {
+                alert(respDTO.message);
+                location.replace("/login.html");
+              }
             });
         } else {
           message.textContent = "Please drop an image file";
           message.style.display = "block";
         }
       });
+    </script>
+    <script>
+      document.getElementById("drop-zone").style.display = "none";
+      document.getElementById("remainCount").style.display = "none";
+      setTimeout(() => {
+        fetch("https://jaybon.org/api/uselog/remainCount", {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.code === 0) {
+              console.log(result);
+              document.getElementById("remainCount").textContent =
+                result.data.remainCount;
+              document.getElementById("loading").style.display = "none";
+              document.getElementById("remainCount").style.display = "block";
+              document.getElementById("drop-zone").style.display = "block";
+            } else if (result.code !== 0) {
+              alert(result.message);
+              location.replace("/login.html");
+            }
+          });
+      }, 1000);
     </script>
   </body>
 </html>
